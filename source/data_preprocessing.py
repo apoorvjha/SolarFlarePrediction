@@ -5,6 +5,7 @@ from PIL import Image
 import logging
 from utility import *
 from tqdm import tqdm
+import runtime_parameters
 
 config = read_configuration()
 logging.basicConfig(
@@ -38,7 +39,7 @@ class SDOBenchmarkDataset:
         Y = []
         logging.info("Iterating over the metadata.")
         for idx, row in tqdm(meta_data_df.iterrows(), total = meta_data_df.shape[0]):
-            images = np.zeros((4, 256, 256, 1))
+            images = np.zeros((runtime_parameters.n_stacked_frames, runtime_parameters.resize_shape[0], runtime_parameters.resize_shape[1], runtime_parameters.image_channels))
             label = []
             sample_id = row["id"]
             chunks = sample_id.split("_")
@@ -60,8 +61,8 @@ class SDOBenchmarkDataset:
                             image_path = os.path.join(image_folder, img_name)
                             image = read_image(image_path,preprocess_image=True)
 
-                            if image.shape != (256, 256, 1):
-                                logging.error(f"The shape of image is {image.shape} is not matching expected shape of (256, 256)")
+                            if image.shape != (runtime_parameters.resize_shape[0], runtime_parameters.resize_shape[1], runtime_parameters.image_channels):
+                                logging.error(f"The shape of image is {image.shape} is not matching expected shape of ({runtime_parameters.resize_shape[0], runtime_parameters.resize_shape[1], runtime_parameters.image_channels})")
                             
                             if self.data_format == 'channels_last':
                                 images[datetime_index[0], :, :, :] = image

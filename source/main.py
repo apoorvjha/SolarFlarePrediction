@@ -33,12 +33,12 @@ if __name__ == "__main__":
         Y = train_val_df[config["prediction_target"]]
     else:
         X = train_val_df.drop(columns = [config["prediction_target"]])
-        Y = train_val_df[config["prediction_target"]]
+        Y = train_val_df[[config["prediction_target"]]]
     
     X_train, X_val, y_train, y_val = train_test_split(X, Y, test_size=runtime_parameters.validation_ratio, stratify = Y,random_state=42)
 
-    train_df = pd.concat([X_train, y_train], axis=1)
-    val_df = pd.concat([X_val, y_val], axis=1)
+    train_df = pd.concat([X_train, y_train], axis=1).reset_index(drop = True)
+    val_df = pd.concat([X_val, y_val], axis=1).reset_index(drop = True)
 
     # Create the Parsed-structured Dataset objects for training, validation and testing model performance.
     train_dataset = SDOBenchmarkDataset(config["dataset_path"]["training_data"],train_df, data_format="channels_last")
@@ -48,9 +48,8 @@ if __name__ == "__main__":
     # val_dataloader = DataLoader(val_dataset, batch_size=runtime_parameters.batch_size, shuffle = False)
     # test_dataloader = DataLoader(test_dataset, batch_size=runtime_parameters.batch_size, shuffle = False)
 
-    print("Train Data Size : ", len(train_dataset))
     tf_train_dataset = tf.data.Dataset.from_tensor_slices((train_dataset.X, train_dataset.Y))
-    tf_train_dataset = tf_train_dataset.shuffle(buffer_size=len(tf_train_dataset),reshuffle_each_iteration=True).batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
+    tf_train_dataset = tf_train_dataset.shuffle(buffer_size=1000,reshuffle_each_iteration=True).batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
 
     tf_val_dataset = tf.data.Dataset.from_tensor_slices((val_dataset.X, val_dataset.Y))
     tf_val_dataset = tf_val_dataset.batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
@@ -75,7 +74,7 @@ if __name__ == "__main__":
     # Compile the model
     convlstm_model.compile(
         loss=tf.keras.losses.binary_crossentropy,
-        optimizer=tf.keras.optimizers.Adam() 
+        optimizer=tf.keras.optimizers.Adam(learning_rate = runtime_parameters.learning_rate) 
     )
 
     # Lets define some callbacks to Adjust LR and Early Stopping.
@@ -84,13 +83,14 @@ if __name__ == "__main__":
 
     history = convlstm_model.fit(
         tf_train_dataset,
-        batch_size = runtime_parameters.batch_size,
+        epochs = runtime_parameters.epochs,
         verbose = runtime_parameters.verbose,
         callbacks = [
             early_stopping,
             reduce_lr
         ],
-        validation_data = tf_val_dataset
+        validation_data = tf_val_dataset,
+        class_weight = runtime_parameters.class_weight
     )
 
     # Evaluate the model
@@ -119,8 +119,8 @@ if __name__ == "__main__":
     ###   - ROC Plot
     ###   - PR-AUC
     ###   - PR Plot
-    val_metrics = evaluate_model_performance(tf_val_dataset, convlstm_model)
-    test_metrics = evaluate_model_performance(tf_test_dataset, convlstm_model)
+    val_metrics = evaluate_model_performance(tf_val_dataset, convlstm_model, "ConvLSTM_Val")
+    test_metrics = evaluate_model_performance(tf_test_dataset, convlstm_model, "ConvLSTM_Test")
     
     ## Save evaluation metrics
     val_metrics = val_metrics.T
@@ -128,8 +128,8 @@ if __name__ == "__main__":
     test_metrics = test_metrics.T
     test_metrics.columns = ["Metrics"]
 
-    val_metrics.to_excel(os.path.join(runtime_parameters.outputs_directory, "validation_metrics.xlsx"))
-    test_metrics.to_excel(os.path.join(runtime_parameters.outputs_directory, "test_metrics.xlsx"))
+    val_metrics.to_excel(os.path.join(runtime_parameters.outputs_directory, "ConvLSTM_validation_metrics.xlsx"))
+    test_metrics.to_excel(os.path.join(runtime_parameters.outputs_directory, "ConvLSTM_test_metrics.xlsx"))
 
 
 
