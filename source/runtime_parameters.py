@@ -1,0 +1,19 @@
+CONFIGURATION_FILE_PATH = "../configuration/configuration.json"
+resize_shape = (256,256)
+image_channels = 1
+convert2gray = True
+apply_smoothing = True
+contrast_streching = True
+gaussian_kernel_size = (5, 5)
+gaussian_sigma = 0
+batch_size = 32
+n_stacked_frames = 4
+n_stacked_convlstm_layers = 3
+validation_ratio = 0.15
+early_stopping_patience = 10
+lr_scheduler_patience = 5
+epochs = 5 # Change it to 500 later...
+verbose = 1 # "auto", 0, 1, or 2. Verbosity mode. 0 = silent, 1 = progress bar, 2 = one line per epoch. "auto" becomes 1 for most cases
+class_weight = {0 : 1.0, 1: 1.0}
+outputs_directory = "../outputs/"
+plots_directory = outputs_directory + "plots/"
