@@ -1,4 +1,3 @@
 log/*
-data/SDOBenchmark-data-full
-data/SDOBenchmark-data-full.zip
+data/*
 source/__pycache__
