@@ -96,7 +96,7 @@ if __name__ == "__main__":
     reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=runtime_parameters.lr_scheduler_patience)
 
     history = convlstm_model.fit(
-        x = tf_train_dataset,
+        tf_train_dataset,
         batch_size = runtime_parameters.batch_size,
         epochs = runtime_parameters.epochs,
         verbose = runtime_parameters.verbose,

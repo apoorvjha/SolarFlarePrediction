@@ -33,7 +33,6 @@ class ConvLSTMModel(tf.keras.Model):
         self.output_layer = tf.keras.layers.Dense(1, activation="sigmoid")
 
     def call(self, inputs):
-        print(inputs.shape)
         x = inputs
         for layer in self.convlstm_stack:
             x = layer(x)
