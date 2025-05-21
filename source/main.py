@@ -37,15 +37,24 @@ if __name__ == "__main__":
     
     X_train, X_val, y_train, y_val = train_test_split(X, Y, test_size=runtime_parameters.validation_ratio, stratify = Y,random_state=42)
 
+    del X
+    del Y
+    del train_val_df
+
     train_df = pd.concat([X_train, y_train], axis=1)
     val_df = pd.concat([X_val, y_val], axis=1)
 
+    del X_train
+    del y_train
+    del X_val
+    del y_val
 
     # Create the Parsed-structured Dataset objects for training, validation and testing model performance.
     train_dataset = SDOBenchmarkDataset(config["dataset_path"]["training_data"],train_df, data_format="channels_last")
     val_dataset = SDOBenchmarkDataset(config["dataset_path"]["training_data"],val_df, data_format="channels_last")
-    test_dataset = SDOBenchmarkDataset(config["dataset_path"]["test_data"],test_df, data_format="channels_last")
 
+    del train_df
+    del val_df
     # train_dataloader = DataLoader(train_dataset, batch_size=runtime_parameters.batch_size, shuffle = True)
     # val_dataloader = DataLoader(val_dataset, batch_size=runtime_parameters.batch_size, shuffle = False)
     # test_dataloader = DataLoader(test_dataset, batch_size=runtime_parameters.batch_size, shuffle = False)
@@ -56,9 +65,6 @@ if __name__ == "__main__":
 
     tf_val_dataset = tf.data.Dataset.from_tensor_slices((val_dataset.X, val_dataset.Y))
     tf_val_dataset = tf_val_dataset.batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
-
-    tf_test_dataset = tf.data.Dataset.from_tensor_slices((test_dataset.X, test_dataset.Y))
-    tf_test_dataset = tf_test_dataset.batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
 
     # Model Instantiation
     n_frames, height, width, in_channels = runtime_parameters.n_stacked_frames, runtime_parameters.resize_shape[0], runtime_parameters.resize_shape[1], runtime_parameters.image_channels
@@ -76,6 +82,8 @@ if __name__ == "__main__":
     x = np.random.rand(32, n_frames, height, width, in_channels)
     convlstm_model(x)
     print(convlstm_model.summary())
+
+    del x
 
     # Compile the model
     convlstm_model.compile(
@@ -100,7 +108,13 @@ if __name__ == "__main__":
         class_weight = runtime_parameters.class_weight
     )
 
+    del train_dataset
+    del tf_train_dataset
+
     # Evaluate the model
+    test_dataset = SDOBenchmarkDataset(config["dataset_path"]["test_data"],test_df, data_format="channels_last")
+    tf_test_dataset = tf.data.Dataset.from_tensor_slices((test_dataset.X, test_dataset.Y))
+    tf_test_dataset = tf_test_dataset.batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
 
     ## Create the saving directory
     ### Create directory if it doesn't exist
