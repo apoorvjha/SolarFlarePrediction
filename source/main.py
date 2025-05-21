@@ -98,14 +98,12 @@ if __name__ == "__main__":
     history = convlstm_model.fit(
         tf_train_dataset,
         batch_size = runtime_parameters.batch_size,
-        epochs = runtime_parameters.epochs,
         verbose = runtime_parameters.verbose,
         callbacks = [
             early_stopping,
             reduce_lr
         ],
-        validation_data = tf_val_dataset,
-        class_weight = runtime_parameters.class_weight
+        validation_data = tf_val_dataset
     )
 
     del train_dataset
