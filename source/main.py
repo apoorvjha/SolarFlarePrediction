@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
 
     tf_train_dataset = tf.data.Dataset.from_tensor_slices((train_dataset.X, train_dataset.Y))
-    tf_train_dataset = tf_train_dataset.shuffle(buffer_size=1000,reshuffle_each_iteration=True).batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
+    tf_train_dataset = tf_train_dataset.shuffle(buffer_size=len(tf_train_dataset),reshuffle_each_iteration=True).batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
 
     tf_val_dataset = tf.data.Dataset.from_tensor_slices((val_dataset.X, val_dataset.Y))
     tf_val_dataset = tf_val_dataset.batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
