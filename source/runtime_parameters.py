@@ -1,12 +1,12 @@
 CONFIGURATION_FILE_PATH = "/kaggle/working/SolarFlarePrediction/configuration/configuration.json"
-resize_shape = (256,256)
+resize_shape = (28,28)
 image_channels = 1
 convert2gray = True
 apply_smoothing = True
 contrast_streching = True
 gaussian_kernel_size = (5, 5)
 gaussian_sigma = 0
-batch_size = 32
+batch_size = 16
 n_stacked_frames = 4
 n_stacked_convlstm_layers = 3
 validation_ratio = 0.15
