@@ -59,7 +59,7 @@ if __name__ == "__main__":
     # val_dataloader = DataLoader(val_dataset, batch_size=runtime_parameters.batch_size, shuffle = False)
     # test_dataloader = DataLoader(test_dataset, batch_size=runtime_parameters.batch_size, shuffle = False)
 
-
+    print("Train Data Size : ", len(train_dataset))
     tf_train_dataset = tf.data.Dataset.from_tensor_slices((train_dataset.X, train_dataset.Y))
     tf_train_dataset = tf_train_dataset.shuffle(buffer_size=len(tf_train_dataset),reshuffle_each_iteration=True).batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
 
