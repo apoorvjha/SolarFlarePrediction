@@ -1,0 +1,15 @@
+{
+    "log_filename" : "../log/run_log_$$module_name$$_$$timestamp$$.log",
+    "log_level" : "info",
+    "dataset_path" : {
+        "training_data" : "../data/SDOBenchmark-data-full/training/",
+        "test_data" : "../data/SDOBenchmark-data-full/test/"
+    },
+    "flux_column_name" : "peak_flux",
+    "binary_target_mapping" : {
+        ">= B" : ["B", "C", "M", "X"],
+        ">= C" : ["C", "M", "X"],
+        ">= M" : ["M", "X"] 
+    },
+    "prediction_target" : ">= C"
+}
