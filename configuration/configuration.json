@@ -1,9 +1,9 @@
 {
-    "log_filename" : "../log/run_log_$$module_name$$_$$timestamp$$.log",
+    "log_filename" : "/kaggle/working/log/run_log_$$module_name$$_$$timestamp$$.log",
     "log_level" : "info",
     "dataset_path" : {
-        "training_data" : "../data/SDOBenchmark-data-full/training/",
-        "test_data" : "../data/SDOBenchmark-data-full/test/"
+        "training_data" : "/kaggle/input/sdobenchmark-data-full/SDOBenchmark-data-full/training/",
+        "test_data" : "/kaggle/input/sdobenchmark-data-full/SDOBenchmark-data-full/test/"
     },
     "flux_column_name" : "peak_flux",
     "binary_target_mapping" : {
