@@ -1,5 +1,5 @@
 {
-    "log_filename" : "/kaggle/working/log/run_log_$$module_name$$_$$timestamp$$.log",
+    "log_filename" : "/kaggle/working/SolarFlarePrediction/log/run_log_$$module_name$$_$$timestamp$$.log",
     "log_level" : "info",
     "dataset_path" : {
         "training_data" : "/kaggle/input/sdobenchmark-data-full/SDOBenchmark-data-full/training/",
