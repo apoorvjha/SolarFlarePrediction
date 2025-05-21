@@ -37,24 +37,13 @@ if __name__ == "__main__":
     
     X_train, X_val, y_train, y_val = train_test_split(X, Y, test_size=runtime_parameters.validation_ratio, stratify = Y,random_state=42)
 
-    del X
-    del Y
-    del train_val_df
-
     train_df = pd.concat([X_train, y_train], axis=1)
     val_df = pd.concat([X_val, y_val], axis=1)
-
-    del X_train
-    del y_train
-    del X_val
-    del y_val
 
     # Create the Parsed-structured Dataset objects for training, validation and testing model performance.
     train_dataset = SDOBenchmarkDataset(config["dataset_path"]["training_data"],train_df, data_format="channels_last")
     val_dataset = SDOBenchmarkDataset(config["dataset_path"]["training_data"],val_df, data_format="channels_last")
 
-    del train_df
-    del val_df
     # train_dataloader = DataLoader(train_dataset, batch_size=runtime_parameters.batch_size, shuffle = True)
     # val_dataloader = DataLoader(val_dataset, batch_size=runtime_parameters.batch_size, shuffle = False)
     # test_dataloader = DataLoader(test_dataset, batch_size=runtime_parameters.batch_size, shuffle = False)
@@ -83,8 +72,6 @@ if __name__ == "__main__":
     convlstm_model(x)
     print(convlstm_model.summary())
 
-    del x
-
     # Compile the model
     convlstm_model.compile(
         loss=tf.keras.losses.binary_crossentropy,
@@ -105,9 +92,6 @@ if __name__ == "__main__":
         ],
         validation_data = tf_val_dataset
     )
-
-    del train_dataset
-    del tf_train_dataset
 
     # Evaluate the model
     test_dataset = SDOBenchmarkDataset(config["dataset_path"]["test_data"],test_df, data_format="channels_last")
