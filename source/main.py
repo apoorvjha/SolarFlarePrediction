@@ -87,7 +87,7 @@ if __name__ == "__main__":
         verbose = runtime_parameters.verbose,
         callbacks = [
             early_stopping,
-            reduce_lr
+            # reduce_lr
         ],
         validation_data = tf_val_dataset,
         class_weight = runtime_parameters.class_weight
