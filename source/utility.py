@@ -287,7 +287,7 @@ def evaluate_model_performance(dataset, model, model_name):
 def Rotate(image,rotation=90,steps=15):
     images=[]
     for i in range(-rotation,rotation+1,steps):
-        rotation_matrix=getRotationMatrix2D(center=(image.shape[1]/2,image.shape[2]/2),
+        rotation_matrix=getRotationMatrix2D(center=(image.shape[0]/2,image.shape[1]/2),
         angle=i, scale=1)
         rotated_image=warpAffine(src=image, M=rotation_matrix, 
         dsize=(image.shape[1], image.shape[0]))
@@ -297,8 +297,8 @@ def Rotate(image,rotation=90,steps=15):
 def AdjustBrightness(image):
     images=[]
     mask=ones(image.shape,dtype='uint8') * 70
-    images.append(add(image,mask))
-    images.append(subtract(image,mask))
+    images.append(add(image,mask, dtype=np.float32))
+    images.append(subtract(image,mask, dtype=np.float32))
     return images
 
 def FlipImage(image):

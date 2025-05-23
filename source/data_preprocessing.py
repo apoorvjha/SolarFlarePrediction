@@ -51,8 +51,8 @@ class SDOBenchmarkDataset:
         rotated_images = Rotate(image)
         images.extend(rotated_images)
 
-        brightness_adjusted_image = AdjustBrightness(image)
-        images.append(brightness_adjusted_image)
+        # brightness_adjusted_image = AdjustBrightness(image)
+        # images.append(brightness_adjusted_image)
 
         flipped_images = FlipImage(image)
         images.extend(flipped_images)
@@ -63,12 +63,11 @@ class SDOBenchmarkDataset:
         smoothed_image = Smoothing(image)
         images.append(smoothed_image)
 
-        for image in images:
+        for i in range(len(images)):
             if self.data_format == "channels_last":
-                image = image.reshape((*runtime_parameters.resize_shape, 1))
+                images[i] = images[i].reshape((*runtime_parameters.resize_shape, 1))
             else:
-                image = image.reshape((1, *runtime_parameters.resize_shape))
-
+                images[i] = images[i].reshape((1, *runtime_parameters.resize_shape))
         return images
 
     def load_data(self, meta_data_df):
@@ -116,7 +115,7 @@ class SDOBenchmarkDataset:
                 label = row[config["prediction_target"]]
             else:
                 logging.error("The specified prediction target is not supported.")
-            for frame_idx in images.shape[0]:
+            for frame_idx in range(images.shape[0]):
                 images_copy = images
                 augmented_images = self.data_augmentation(images[frame_idx, : , :, :])
                 for image in augmented_images:
