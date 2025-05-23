@@ -54,6 +54,9 @@ if __name__ == "__main__":
     tf_val_dataset = tf.data.Dataset.from_tensor_slices((val_dataset.X, val_dataset.Y))
     tf_val_dataset = tf_val_dataset.batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
 
+    print("# Training Samples : ", len(tf_train_dataset))
+    print("# Validation Samples : ", len(tf_val_dataset))
+
     # Model Instantiation
     n_frames, height, width, in_channels = runtime_parameters.n_stacked_frames, runtime_parameters.resize_shape[0], runtime_parameters.resize_shape[1], runtime_parameters.image_channels
 
@@ -94,7 +97,7 @@ if __name__ == "__main__":
     )
 
     # Evaluate the model
-    test_dataset = SDOBenchmarkDataset(config["dataset_path"]["test_data"],test_df, data_format="channels_last")
+    test_dataset = SDOBenchmarkDataset(config["dataset_path"]["test_data"],test_df, data_format="channels_last", apply_augmentation = False)
     tf_test_dataset = tf.data.Dataset.from_tensor_slices((test_dataset.X, test_dataset.Y))
     tf_test_dataset = tf_test_dataset.batch(runtime_parameters.batch_size).prefetch(tf.data.AUTOTUNE)
 

@@ -115,13 +115,17 @@ class SDOBenchmarkDataset:
                 label = row[config["prediction_target"]]
             else:
                 logging.error("The specified prediction target is not supported.")
-            for frame_idx in range(images.shape[0]):
-                images_copy = images
-                augmented_images = self.data_augmentation(images[frame_idx, : , :, :])
-                for image in augmented_images:
-                    images_copy[frame_idx, :, : , :] = image 
-                    X.append(images_copy)
-                    Y.append(label)
+            if self.apply_augmentation:
+                for frame_idx in range(images.shape[0]):
+                    images_copy = images
+                    augmented_images = self.data_augmentation(images[frame_idx, : , :, :])
+                    for image in augmented_images:
+                        images_copy[frame_idx, :, : , :] = image 
+                        X.append(images_copy)
+                        Y.append(label)
+            else:
+                X.append(images)
+                Y.append(label)
         X = np.array(X)
         Y = np.array(Y)
         return X, Y
