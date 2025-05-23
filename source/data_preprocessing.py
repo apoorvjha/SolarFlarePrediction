@@ -20,11 +20,13 @@ class SDOBenchmarkDataset:
             self,
             base_path,
             data,
-            data_format = "channels_last"
+            data_format = "channels_last",
+            apply_augmentation=True
         ):
         self.base_path = base_path
         self.data = data
         self.data_format = data_format
+        self.apply_augmentation = apply_augmentation
 
         # Define the timesteps to pick the magnetograms (aka. channels)
         self.channels = ["magnetogram"]
@@ -32,6 +34,42 @@ class SDOBenchmarkDataset:
 
         self.X, self.Y = self.load_data(self.data)
         logging.info("Dataset object instantiated!")
+    
+    def data_augmentation(self, image):
+
+        if self.data_format == "channels_last":
+            if image.shape[-1] == 1:
+                image = image.reshape(runtime_parameters.resize_shape)
+        else:
+            if image.shape[0] == 1:
+                image = image.reshape(runtime_parameters.resize_shape)
+
+        images = []
+
+        images.append(image)
+
+        rotated_images = Rotate(image)
+        images.extend(rotated_images)
+
+        brightness_adjusted_image = AdjustBrightness(image)
+        images.append(brightness_adjusted_image)
+
+        flipped_images = FlipImage(image)
+        images.extend(flipped_images)
+
+        sharpedned_image = Sharpening(image)
+        images.append(sharpedned_image)
+
+        smoothed_image = Smoothing(image)
+        images.append(smoothed_image)
+
+        for image in images:
+            if self.data_format == "channels_last":
+                image = image.reshape((*runtime_parameters.resize_shape, 1))
+            else:
+                image = image.reshape((1, *runtime_parameters.resize_shape))
+
+        return images
 
     def load_data(self, meta_data_df):
         logging.info("Starting ingesting the images and labels data.")
@@ -41,6 +79,7 @@ class SDOBenchmarkDataset:
         for idx, row in tqdm(meta_data_df.iterrows(), total = meta_data_df.shape[0]):
             images = np.zeros((runtime_parameters.n_stacked_frames, runtime_parameters.resize_shape[0], runtime_parameters.resize_shape[1], runtime_parameters.image_channels))
             label = []
+            augmented_images = []
             sample_id = row["id"]
             chunks = sample_id.split("_")
             ar_number = chunks[0]
@@ -68,18 +107,22 @@ class SDOBenchmarkDataset:
                                 images[datetime_index[0], :, :, :] = image
                             else:
                                 images[:, :, :, datetime_index[0]] = image
-                            
-                            if isinstance(config["prediction_target"], list):
-                                label = [row[col] for col in config["prediction_target"]]
-                            elif isinstance(config["prediction_target"], str):
-                                label = row[config["prediction_target"]]
-                            else:
-                                logging.error("The specified prediction target is not supported.")
-
-                            X.append(images)
-                            Y.append(label)
                     except Exception as e:
                         logging.error(f"Failed to Load {img_name} due to {e}")
+
+            if isinstance(config["prediction_target"], list):
+                label = [row[col] for col in config["prediction_target"]]
+            elif isinstance(config["prediction_target"], str):
+                label = row[config["prediction_target"]]
+            else:
+                logging.error("The specified prediction target is not supported.")
+            for frame_idx in images.shape[0]:
+                images_copy = images
+                augmented_images = self.data_augmentation(images[frame_idx, : , :, :])
+                for image in augmented_images:
+                    images_copy[frame_idx, :, : , :] = image 
+                    X.append(images_copy)
+                    Y.append(label)
         X = np.array(X)
         Y = np.array(Y)
         return X, Y
