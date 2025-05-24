@@ -1,4 +1,4 @@
-CONFIGURATION_FILE_PATH = "../configuration/configuration.json"
+CONFIGURATION_FILE_PATH = "/kaggle/working/SolarFlarePrediction/configuration/configuration.json"
 resize_shape = (28,28)
 image_channels = 1
 convert2gray = True
@@ -16,6 +16,6 @@ epochs = 500 # Change it to 500 later...
 verbose = 1 # "auto", 0, 1, or 2. Verbosity mode. 0 = silent, 1 = progress bar, 2 = one line per epoch. "auto" becomes 1 for most cases
 # class_weight = {0 : 1.0, 1: 1.0}
 class_weight = { 0: 0.845, 1: 1.224}
-outputs_directory = "../outputs/"
+outputs_directory = "/kaggle/working/outputs/"
 plots_directory = outputs_directory + "plots/"
 learning_rate = 1e-3
